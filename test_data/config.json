@@ -17,9 +17,6 @@
           "gziLocation": {
             "uri": "https://jbrowse.org/genomes/hg19/fasta/hg19.fa.gz.gzi"
           }
-        },
-        "rendering": {
-          "type": "DivSequenceRenderer"
         }
       },
       "refNameAliases": {
@@ -48,9 +45,6 @@
           "gziLocation": {
             "uri": "https://jbrowse.org/genomes/GRCh38/fasta/hg38.prefix.fa.gz.gzi"
           }
-        },
-        "rendering": {
-          "type": "DivSequenceRenderer"
         }
       },
       "refNameAliases": {
@@ -75,9 +69,6 @@
         "bigBedLocation": {
           "uri": "https://jbrowse.org/genomes/hg19/repeats.bb"
         }
-      },
-      "renderer": {
-        "type": "SvgFeatureRenderer"
       }
     },
     {
@@ -120,12 +111,18 @@
           "chrMT"
         ]
       },
-      "renderer": {
-        "type": "SvgFeatureRenderer",
-        "labels": {
-          "description": "function(feature) { return feature.get('gene_name') }"
+      "displays": [
+        {
+          "type": "LinearBasicDisplay",
+          "displayId": "nclist_genes_hg19_linear",
+          "renderer": {
+            "type": "SvgFeatureRenderer",
+            "labels": {
+              "description": "function(feature) { return feature.get('gene_name') }"
+            }
+          }
         }
-      }
+      ]
     },
     {
       "type": "FeatureTrack",
@@ -138,9 +135,6 @@
         "bigBedLocation": {
           "uri": "https://jbrowse.org/genomes/hg19/gaps.bb"
         }
-      },
-      "renderer": {
-        "type": "SvgFeatureRenderer"
       }
     },
     {
@@ -154,9 +148,6 @@
         "bigBedLocation": {
           "uri": "https://hgdownload.soe.ucsc.edu/gbdb/hg19/bbi/clinvar/clinvarCnv.bb"
         }
-      },
-      "renderer": {
-        "type": "SvgFeatureRenderer"
       }
     },
     {
@@ -170,9 +161,6 @@
         "bigBedLocation": {
           "uri": "https://hgdownload.soe.ucsc.edu/gbdb/hg19/bbi/clinvar/clinvarMain.bb"
         }
-      },
-      "renderer": {
-        "type": "SvgFeatureRenderer"
       }
     },
     {
@@ -186,9 +174,6 @@
         "bigBedLocation": {
           "uri": "https://jbrowse.org/genomes/GRCh38/repeats.bb"
         }
-      },
-      "renderer": {
-        "type": "SvgFeatureRenderer"
       }
     },
     {
@@ -231,12 +216,18 @@
           "chrMT"
         ]
       },
-      "renderer": {
-        "type": "SvgFeatureRenderer",
-        "labels": {
-          "description": "function(feature) { return feature.get('gene_name') }"
+      "displays": [
+        {
+          "type": "LinearBasicDisplay",
+          "displayId": "gencode_nclist_hg38_linear",
+          "renderer": {
+            "type": "SvgFeatureRenderer",
+            "labels": {
+              "description": "function(feature) { return feature.get('gene_name') }"
+            }
+          }
         }
-      }
+      ]
     },
     {
       "type": "FeatureTrack",
@@ -249,9 +240,6 @@
         "bigBedLocation": {
           "uri": "https://hgdownload.soe.ucsc.edu/gbdb/hg38/bbi/clinvar/clinvarCnv.bb"
         }
-      },
-      "renderer": {
-        "type": "SvgFeatureRenderer"
       }
     },
     {
@@ -265,9 +253,6 @@
         "bigBedLocation": {
           "uri": "https://hgdownload.soe.ucsc.edu/gbdb/hg38/bbi/clinvar/clinvarMain.bb"
         }
-      },
-      "renderer": {
-        "type": "SvgFeatureRenderer"
       }
     },
     {
@@ -282,12 +267,18 @@
           "uri": "https://hgdownload.soe.ucsc.edu/gbdb/hg38/mane/mane.0.6.bb"
         }
       },
-      "renderer": {
-        "type": "SvgFeatureRenderer",
-        "labels": {
-          "description": "function(feature) { return feature.get('geneName2') }"
+      "displays": [
+        {
+          "type": "LinearBasicDisplay",
+          "displayId": "mane_hg38_linear",
+          "renderer": {
+            "type": "SvgFeatureRenderer",
+            "labels": {
+              "description": "function(feature) { return feature.get('geneName2') }"
+            }
+          }
         }
-      }
+      ]
     },
     {
       "type": "FeatureTrack",
@@ -300,9 +291,6 @@
         "bigBedLocation": {
           "uri": "https://hgdownload.soe.ucsc.edu/gbdb/hg38/gdcCancer/gdcCancer.bb"
         }
-      },
-      "renderer": {
-        "type": "SvgFeatureRenderer"
       }
     },
     {
@@ -316,9 +304,6 @@
         "bigBedLocation": {
           "uri": "https://jbrowse.org/genomes/GRCh38/gaps.bb"
         }
-      },
-      "renderer": {
-        "type": "SvgFeatureRenderer"
       }
     }
   ],

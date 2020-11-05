@@ -160,8 +160,8 @@ function SvgFeatureRendering(props) {
     regions,
     bpPerPx,
     features,
-    trackModel,
     config,
+    displayModel,
   } = props
   const [region] = regions || []
   const width = (region.end - region.start) / bpPerPx
@@ -258,7 +258,7 @@ function SvgFeatureRendering(props) {
       const px = region.reversed ? width - offsetX : offsetX
       const clientBp = region.start + bpPerPx * px
 
-      const feats = trackModel.getFeatureOverlapping(
+      const feats = displayModel.getFeatureOverlapping(
         blockKey,
         clientBp,
         offsetY,
@@ -278,7 +278,7 @@ function SvgFeatureRendering(props) {
       onMouseMove,
       region.reversed,
       region.start,
-      trackModel,
+      displayModel,
       width,
     ],
   )
@@ -358,7 +358,7 @@ SvgFeatureRendering.propTypes = {
     ReactPropTypes.arrayOf(ReactPropTypes.shape()),
   ]),
   config: CommonPropTypes.ConfigSchema.isRequired,
-  trackModel: ReactPropTypes.shape({
+  displayModel: ReactPropTypes.shape({
     configuration: ReactPropTypes.shape({}),
     getFeatureOverlapping: ReactPropTypes.func,
     selectedFeatureId: ReactPropTypes.string,
@@ -380,7 +380,7 @@ SvgFeatureRendering.propTypes = {
 }
 
 SvgFeatureRendering.defaultProps = {
-  trackModel: {},
+  displayModel: {},
 
   features: new Map(),
   blockKey: undefined,
