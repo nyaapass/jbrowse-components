@@ -1,10 +1,6 @@
 import { readConfObject } from '@jbrowse/core/configuration'
-import {
-  guessAdapter,
-  guessTrackType,
-  UNKNOWN,
-  UNSUPPORTED,
-} from '@jbrowse/core/util/tracks'
+import { getSession } from '@jbrowse/core/util'
+import { guessAdapter, UNKNOWN, UNSUPPORTED } from '@jbrowse/core/util/tracks'
 import Link from '@material-ui/core/Link'
 import MenuItem from '@material-ui/core/MenuItem'
 import { makeStyles } from '@material-ui/core/styles'
@@ -13,6 +9,7 @@ import Typography from '@material-ui/core/Typography'
 import { observer, PropTypes as MobxPropTypes } from 'mobx-react'
 import PropTypes from 'prop-types'
 import React, { useState, useEffect } from 'react'
+import { AddTrackModel } from '../model'
 
 const useStyles = makeStyles(theme => ({
   spacing: {
@@ -20,27 +17,22 @@ const useStyles = makeStyles(theme => ({
   },
 }))
 
-function ConfirmTrack({
-  trackData,
-  trackName,
-  fileName,
-  indexTrackData,
-  setTrackAdapter,
-  setTrackName,
-  trackType,
-  setTrackType,
-  trackAdapter,
-  assembly,
-  setAssembly,
-  session,
-}) {
+function ConfirmTrack({ model }: { model: AddTrackModel }) {
   const classes = useStyles()
-  const [error, setError] = useState()
+  const session = getSession(model)
+  const [error, setError] = useState<string>()
+  const {
+    trackName,
+    trackData,
+    trackAdapter,
+    trackType,
+    indexTrackData,
+    assembly,
+  } = model
   useEffect(() => {
-    if (trackData.uri) {
+    if (trackData?.uri) {
       const adapter = guessAdapter(trackData.uri, 'uri', indexTrackData.uri)
-      setTrackAdapter(adapter)
-      setTrackType(guessTrackType(adapter.type))
+      model.setTrackAdapter(adapter)
 
       // check for whether the user entered an absolute URL
       if (
@@ -81,15 +73,9 @@ function ConfirmTrack({
     }
     if (trackData.localPath) {
       const adapter = guessAdapter(trackData.localPath, 'localPath')
-      setTrackAdapter(adapter)
-      setTrackType(guessTrackType(adapter.type))
+      model.setTrackAdapter(adapter)
     }
-    if (trackData.config) setTrackAdapter({ type: 'FromConfigAdapter' })
-  }, [trackData, setTrackAdapter, indexTrackData, setTrackType])
-
-  function handleAssemblyChange(event) {
-    setAssembly(event.target.value)
-  }
+  }, [trackData, indexTrackData])
 
   if (trackAdapter.type === UNSUPPORTED)
     return (
@@ -146,10 +132,10 @@ function ConfirmTrack({
           select
           fullWidth
           onChange={event => {
-            setTrackAdapter({ type: event.target.value })
-            setTrackType(guessTrackType(event.target.value))
+            model.setTrackAdapter({ type: event.target.value })
           }}
           SelectProps={{
+            // @ts-ignore
             SelectDisplayProps: { 'data-testid': 'adapterTypeSelect' },
           }}
         >
@@ -208,8 +194,8 @@ function ConfirmTrack({
           label="trackName"
           helperText="A name for this track"
           fullWidth
-          value={trackName || fileName}
-          onChange={event => setTrackName(event.target.value)}
+          value={trackName}
+          onChange={event => model.setTrackName(event.target.value)}
           inputProps={{ 'data-testid': 'trackNameInput' }}
         />
         <TextField
@@ -220,9 +206,10 @@ function ConfirmTrack({
           select
           fullWidth
           onChange={event => {
-            setTrackType(event.target.value)
+            model.setTrackType(event.target.value)
           }}
           SelectProps={{
+            // @ts-ignore
             SelectDisplayProps: { 'data-testid': 'trackTypeSelect' },
           }}
         >
@@ -243,8 +230,11 @@ function ConfirmTrack({
           helperText="Assembly to which the track will be added"
           select
           fullWidth
-          onChange={handleAssemblyChange}
+          onChange={event => {
+            model.setAssembly(event.target.value)
+          }}
           SelectProps={{
+            // @ts-ignore
             SelectDisplayProps: { 'data-testid': 'assemblyNameSelect' },
           }}
         >
