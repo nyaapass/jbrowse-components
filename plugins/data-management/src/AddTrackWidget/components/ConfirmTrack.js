@@ -42,8 +42,16 @@ function ConfirmTrack({
       setTrackAdapter(adapter)
       setTrackType(guessTrackType(adapter.type))
 
-      // check for whether the user entered an absolute URL
+      // check for ftp url inputs
       if (
+        (indexTrackData.uri && indexTrackData.uri.startsWith('ftp://')) ||
+        trackData.uri.startsWith('ftp://')
+      ) {
+        setError(`Warning: JBrowse cannot access files using the ftp protocol`)
+      }
+
+      // check for whether the user entered an absolute URL
+      else if (
         !(
           (indexTrackData.uri && indexTrackData.uri.startsWith('http')) ||
           trackData.uri.startsWith('http')
@@ -70,14 +78,6 @@ function ConfirmTrack({
           protocol`,
         )
       }
-
-      // check for ftp url inputs
-      else if (
-        (indexTrackData.uri && indexTrackData.uri.startsWith('ftp://')) ||
-        trackData.uri.startsWith('ftp://')
-      ) {
-        setError(`Warning: JBrowse cannot access files using the ftp protocol`)
-      }
     }
     if (trackData.localPath) {
       const adapter = guessAdapter(trackData.localPath, 'localPath')
@@ -89,15 +89,6 @@ function ConfirmTrack({
 
   function handleAssemblyChange(event) {
     setAssembly(event.target.value)
-    if (trackAdapter.type === 'CramAdapter') {
-      setTrackAdapter({
-        ...trackAdapter,
-        sequenceAdapter: readConfObject(event.target.value, [
-          'sequence',
-          'adapter',
-        ]),
-      })
-    }
   }
 
   if (trackAdapter.type === UNSUPPORTED)
