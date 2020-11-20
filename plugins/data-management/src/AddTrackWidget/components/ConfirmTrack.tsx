@@ -16,6 +16,25 @@ const useStyles = makeStyles(theme => ({
   },
 }))
 
+/**
+ * check if a string looks like an abolute URL, e.g. a
+ * full URL e.g. "https://mysite.org/myfile.txt",
+ * implicit protocol URL e.g. "//mysite.org/myfile.txt", or
+ * implicit domain name URL e.g. "/myfile.txt"
+ * @param {String} url URL
+ */
+function isAbsoluteUrl(url) {
+  try {
+    // eslint-disable-next-line no-new
+    new URL(url)
+    return true
+  } catch (error) {
+    return url.startsWith('/')
+  }
+}
+
+
+
 function ConfirmTrack({ model }: { model: AddTrackModel }) {
   const classes = useStyles()
   const session = getSession(model)
@@ -33,11 +52,20 @@ function ConfirmTrack({ model }: { model: AddTrackModel }) {
       const adapter = guessAdapter(trackData.uri, 'uri', indexTrackData.uri)
       model.setTrackAdapter(adapter)
 
-      // check for whether the user entered an absolute URL
+
+      // check for ftp url inputs
       if (
+        (indexTrackData.uri && indexTrackData.uri.startsWith('ftp://')) ||
+        trackData.uri.startsWith('ftp://')
+      ) {
+        setError(`Warning: JBrowse cannot access files using the ftp protocol`)
+      }
+
+      // check for whether the user entered an absolute URL
+      else if (
         !(
-          (indexTrackData.uri && indexTrackData.uri.startsWith('http')) ||
-          trackData.uri.startsWith('http')
+          (indexTrackData.uri && isAbsoluteUrl(indexTrackData.uri)) ||
+          isAbsoluteUrl(trackData.uri)
         )
       ) {
         setError(
@@ -60,14 +88,6 @@ function ConfirmTrack({ model }: { model: AddTrackModel }) {
           https URL for your track, or access the JBrowse app from the http
           protocol`,
         )
-      }
-
-      // check for ftp url inputs
-      else if (
-        (indexTrackData.uri && indexTrackData.uri.startsWith('ftp://')) ||
-        trackData.uri.startsWith('ftp://')
-      ) {
-        setError(`Warning: JBrowse cannot access files using the ftp protocol`)
       }
     }
     if (trackData.localPath) {
