@@ -1,10 +1,11 @@
 import { Instance, types } from 'mobx-state-tree'
 
 import BaseViewModel from '@jbrowse/core/pluggableElementTypes/models/BaseViewModel'
-import { BaseTrackStateModel } from '@jbrowse/core/pluggableElementTypes/models'
-import { getSession, isSessionModelWithWidgets } from '@jbrowse/core/util'
 import PluginManager from '@jbrowse/core/PluginManager'
 import { ElementId } from '@jbrowse/core/util/types/mst'
+import ret, { parse } from 'clustal-js'
+
+console.log({ ret })
 
 export default function stateModelFactory(pluginManager: PluginManager) {
   return types.compose(
@@ -14,36 +15,37 @@ export default function stateModelFactory(pluginManager: PluginManager) {
         id: ElementId,
         type: types.literal('MsaView'),
         height: 600,
-        tracks: types.array(
-          pluginManager.pluggableMstType(
-            'track',
-            'stateModel',
-          ) as BaseTrackStateModel,
-        ),
+        data: types.maybe(types.string),
       })
       .volatile(() => ({
-        volatileWidth: undefined as number | undefined,
         error: undefined as Error | undefined,
-        borderX: 100,
-        borderY: 100,
+        volatileWidth: 0,
+      }))
+      .actions(self => ({
+        setError(error?: Error) {
+          self.error = error
+        },
+
+        setData(text: string) {
+          self.data = text
+        },
+        setWidth(width: number) {
+          self.volatileWidth = width
+        },
       }))
       .views(self => ({
+        get initialized() {
+          return self.volatileWidth > 0 && Boolean(self.data)
+        },
         get menuItems() {
-          const session = getSession(self)
-          if (isSessionModelWithWidgets(session)) {
-            return [
-              {
-                label: 'Open track selector',
-                onClick: () => {},
-                disabled:
-                  session.visibleWidget &&
-                  session.visibleWidget.id === 'hierarchicalTrackSelector' &&
-                  // @ts-ignore
-                  session.visibleWidget.view.id === self.id,
-              },
-            ]
-          }
           return []
+        },
+
+        get processedData() {
+          return self.data && parse(self.data)
+        },
+        get width() {
+          return self.volatileWidth
         },
       })),
   )
