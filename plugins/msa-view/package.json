@@ -38,6 +38,7 @@
     "@material-ui/icons": "^4.9.1",
     "abortable-promise-cache": "^1.1.3",
     "clsx": "^1.0.0",
+    "d3": "^6.2.0",
     "generic-filehandle": "^2.0.0",
     "json-stable-stringify": "^1.0.1",
     "normalize-wheel": "^1.0.1",
