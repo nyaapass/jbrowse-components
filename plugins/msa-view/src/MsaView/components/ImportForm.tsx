@@ -39,7 +39,6 @@ const ImportForm = observer(({ model }: { model: any }) => {
               try {
                 if (file) {
                   const data = await openLocation(file).readFile('utf8')
-                  console.log({ data })
                   model.setData(data)
                 }
               } catch (e) {

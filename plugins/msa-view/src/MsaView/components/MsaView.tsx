@@ -80,27 +80,20 @@ export default (pluginManager: PluginManager) => {
   const { jbrequire } = pluginManager
 
   return observer(({ model }: { model: MsaViewModel }) => {
-    const { width, height, initialized, margin } = model
-    const ref = useRef<HTMLDivElement>(null)
-
-    useEffect(() => {
-      if (initialized && ref.current && !model.drawn) {
-        initD3(ref.current, 800, 600, model)
-        model.setDrawn(true)
-      }
-    }, [initialized, width, height, model])
+    const { width, height, initialized, margin, totalHeight } = model
 
     if (!initialized) {
       return <ImportForm model={model} />
     }
 
     return (
-      <svg style={{ height, width }}>
-        <g transform={`translate(${margin.left}, ${margin.top})`}>
-          <TreeCanvas model={model} />
-          <MSA model={model} />
-        </g>
-      </svg>
+      <div style={{ height, width, overflow: 'auto' }}>
+        <svg style={{ height: totalHeight, width }}>
+          <g transform={`translate(${margin.left}, ${margin.top})`}>
+            <TreeCanvas model={model} />
+          </g>
+        </svg>
+      </div>
     )
   })
 }
