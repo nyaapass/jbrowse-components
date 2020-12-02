@@ -67,7 +67,7 @@ export default function stateModelFactory(pluginManager: PluginManager) {
           return []
         },
 
-        get processedData() {
+        get msa() {
           return self.data && parse(self.data)
         },
         get width() {
