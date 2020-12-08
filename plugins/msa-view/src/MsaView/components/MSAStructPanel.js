@@ -33,6 +33,7 @@ class MSAStructPanel extends Component {
   }
 
   render() {
+    const { classes } = this.props
     return this.props.structures.length ? (
       <div className={classes.panel}>
         <div>

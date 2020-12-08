@@ -3,14 +3,11 @@
 import React, { Component } from 'react'
 import { withStyles } from '@material-ui/core/styles'
 
-// eslint-disable-next-line import/no-webpack-loader-syntax
-
 import Stockholm from 'stockholm-js'
 import { Newick } from 'newick'
 import JukesCantor from 'jukes-cantor'
 import RapidNeighborJoining from 'neighbor-joining'
 // import { getAncestralReconstruction } from './reconstruction'
-import { makeStyles } from '@material-ui/core/styles'
 import colorSchemes from './colorSchemes'
 
 import MSA from './MSA'
@@ -31,17 +28,6 @@ const styles = {
     textAlign: 'right',
     flexGrow: '1',
     padding: '2px',
-  },
-
-  alignmentColumnCursor: {
-    position: 'absolute',
-    zIndex: '1',
-    borderStyle: 'solid',
-    borderWidth: '1px',
-    borderColor: 'black',
-    backgroundColor: 'black',
-    opacity: '0.1',
-    pointerEvents: 'none',
   },
 }
 

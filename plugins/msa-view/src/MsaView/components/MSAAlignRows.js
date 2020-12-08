@@ -14,6 +14,17 @@ const styles = {
   alignmentRowsBack: {
     zIndex: 2,
   },
+
+  alignmentColumnCursor: {
+    position: 'absolute',
+    zIndex: '1',
+    borderStyle: 'solid',
+    borderWidth: '1px',
+    borderColor: 'black',
+    backgroundColor: 'black',
+    opacity: '0.1',
+    pointerEvents: 'none',
+  },
 }
 class MSAAlignRows extends Component {
   constructor(props) {
@@ -155,6 +166,7 @@ class MSAAlignRows extends Component {
 
         {this.props.hoverColumn !== null ? (
           <div
+            className={classes.alignmentColumnCursor}
             style={{
               left: alignLayout.colX[hoverColumn],
               top: 0,
