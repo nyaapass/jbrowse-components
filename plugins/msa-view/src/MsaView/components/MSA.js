@@ -5,6 +5,7 @@ import { withStyles } from '@material-ui/core/styles'
 import MSATree from './MSATree'
 import MSAAlignNames from './MSAAlignNames'
 import MSAAlignRows from './MSAAlignRows'
+import MSAStructPanel from './MSAStructPanel'
 
 const styles = {
   MSA: {
@@ -298,6 +299,20 @@ class MSA extends Component {
             hoverColumn={this.state.hoverColumn}
           />
         </div>
+
+        <MSAStructPanel
+          ref={this.structRef}
+          initConfig={this.props.config.structure}
+          seqCoords={this.props.data.seqCoords}
+          alignIndex={this.props.alignIndex}
+          structures={this.state.view.structure.openStructures}
+          updateStructure={this.updateStructure.bind(this)}
+          handleCloseStructure={this.handleCloseStructure.bind(this)}
+          handleMouseoverResidue={this.handleMouseoverStructureResidue.bind(
+            this,
+          )}
+          setTimer={this.setTimer.bind(this)}
+        />
       </div>
     )
   }
