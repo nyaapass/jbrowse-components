@@ -1,7 +1,6 @@
 /* eslint-disable react/prop-types */
 import React, { Component } from 'react'
 import { Select, MenuItem } from '@material-ui/core'
-import { extend, isArray } from 'lodash'
 import queryString from 'query-string'
 import './App.css'
 
@@ -21,7 +20,7 @@ class App extends Component {
     super(props)
 
     // config
-    const config = extend(this.defaultConfig(), props.config || {})
+    const config = Object.assign(this.defaultConfig(), props.config || {})
     const {
       genericRowHeight,
       nameFontSize,
@@ -173,7 +172,7 @@ class App extends Component {
     } else {
       try {
         const json = JSON.parse(text)
-        if (isArray(json)) datasets = datasets.concat(json)
+        if (Array.isArray(json)) datasets = datasets.concat(json)
         else datasets.push(json)
       } catch (e) {
         datasets.push({ auto: text, name: newAlignmentName() })
@@ -190,20 +189,19 @@ class App extends Component {
   setDataset(data, extra) {
     const datasetID = (this.datasetsLoaded = (this.datasetsLoaded || 0) + 1)
     this.indexData(data).then(dataWithIndices =>
-      this.setState(
-        extend(
-          { datasetID, reconstructingAncestors: false },
-          dataWithIndices,
-          extra || {},
-        ),
-      ),
+      this.setState({
+        datasetID,
+        reconstructingAncestors: false,
+        ...dataWithIndices,
+        ...(extra || {}),
+      }),
     )
   }
 
   async indexData(suppliedData, suppliedConfig) {
     const config = suppliedConfig || this.state.config
     const data = await this.getData(
-      config.cacheData ? suppliedData : extend({}, suppliedData),
+      config.cacheData ? suppliedData : { ...suppliedData },
       config,
     )
     const treeIndex = this.buildTreeIndex(data)
@@ -244,7 +242,7 @@ class App extends Component {
       )
     }
     if (data.json) {
-      extend(
+      Object.assign(
         data,
         typeof data.json === 'string' ? JSON.parse(data.json) : data.json,
       )
@@ -254,7 +252,7 @@ class App extends Component {
       else if (this.sniffFastaRegex.test(data.auto)) data.fasta = data.auto
       else {
         try {
-          extend(data, JSON.parse(data.auto))
+          Object.assign(data, JSON.parse(data.auto))
         } catch (e) {
           // do nothing if JSON didn't parse
         }
@@ -536,8 +534,8 @@ class App extends Component {
 
   incorporateAncestralReconstruction(ancestralRowData) {
     const { data } = this.state
-    const rowData = extend({}, data.rowData, ancestralRowData)
-    extend(data, { rowData })
+    const rowData = { ...data.rowData, ...ancestralRowData }
+    Object.assign(data, { rowData })
     this.setDataset(data) // rebuilds indices
   }
 

@@ -43,6 +43,7 @@
     "generic-filehandle": "^2.0.0",
     "json-stable-stringify": "^1.0.1",
     "jukes-cantor": "^1.0.4",
+    "lodash": "^4.17.20",
     "neighbor-joining": "^1.0.4",
     "newick": "^2.0.0",
     "normalize-wheel": "^1.0.1",
