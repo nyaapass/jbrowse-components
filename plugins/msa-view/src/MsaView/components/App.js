@@ -1,3 +1,4 @@
+/* eslint-disable react/prop-types */
 import React, { Component } from 'react'
 import { Select, MenuItem } from '@material-ui/core'
 import { extend, isArray } from 'lodash'
@@ -5,13 +6,12 @@ import queryString from 'query-string'
 import './App.css'
 
 // eslint-disable-next-line import/no-webpack-loader-syntax
-import getAncestralReconstructionWorker from 'workerize-loader!./reconstruction'
 
 import Stockholm from 'stockholm-js'
 import { Newick } from 'newick'
 import JukesCantor from 'jukes-cantor'
 import RapidNeighborJoining from 'neighbor-joining'
-import { getAncestralReconstruction } from './reconstruction'
+// import { getAncestralReconstruction } from './reconstruction'
 import colorSchemes from './colorSchemes'
 
 import MSA from './MSA'
@@ -82,9 +82,9 @@ class App extends Component {
     this.msaRef = React.createRef()
 
     window.onpopstate = event => {
-      if (event && event.state && event.state.data)
+      if (event && event.state && event.state.data) {
         this.setDataset(event.state.data)
-      else window.location.reload()
+      } else window.location.reload()
     }
   }
 
@@ -158,8 +158,9 @@ class App extends Component {
         stocks.map((stockholmjs, n) => {
           let name
           ;['DE', 'ID', 'AC'].forEach(tag => {
-            if (!name && stockholmjs.gf[tag] && stockholmjs.gf[tag].length)
+            if (!name && stockholmjs.gf[tag] && stockholmjs.gf[tag].length) {
               name = stockholmjs.gf[tag][0]
+            }
           })
           name = name || newAlignmentName(n)
           const id = ['AC', 'ID'].reduce(
@@ -229,7 +230,7 @@ class App extends Component {
 
   // method to get data & build tree if necessary
   async getData(data, config) {
-    if (data.url)
+    if (data.url) {
       await Promise.all(
         Object.keys(data.url)
           .filter(key => !data[key])
@@ -241,11 +242,13 @@ class App extends Component {
             })
           }),
       )
-    if (data.json)
+    }
+    if (data.json) {
       extend(
         data,
         typeof data.json === 'string' ? JSON.parse(data.json) : data.json,
       )
+    }
     if (data.auto) {
       if (this.sniffStockholmRegex.test(data.auto)) data.stockholm = data.auto
       else if (this.sniffFastaRegex.test(data.auto)) data.fasta = data.auto
@@ -258,16 +261,16 @@ class App extends Component {
       }
     }
     if (!(data.branches && data.rowData)) {
-      if (data.stockholm)
+      if (data.stockholm) {
         // was a Stockholm-format alignment specified?
         this.unpackStockholm(data, config, data.stockholm)
-      else if (data.stockholmjs)
+      } else if (data.stockholmjs) {
         // was a StockholmJS object specified?
         this.unpackStockholmJS(data, config, data.stockholmjs)
-      else if (data.fasta)
+      } else if (data.fasta) {
         // was a FASTA-format alignment specified?
         data.rowData = this.parseFasta(data.fasta)
-      else throw new Error('no sequence data')
+      } else throw new Error('no sequence data')
       // If a Newick-format tree was specified somehow (as a separate data item, or in the Stockholm alignment) then parse it
       if (data.newick || data.newickjs) {
         const NewickParser = new Newick()
@@ -278,7 +281,7 @@ class App extends Component {
         data.branches = []
         const traverse = parent => {
           // auto-name internal nodes
-          if (parent.branchset)
+          if (parent.branchset) {
             parent.branchset.forEach(child => {
               data.branches.push([
                 getName(parent),
@@ -287,6 +290,7 @@ class App extends Component {
               ])
               traverse(child)
             })
+          }
         }
         traverse(newickTree)
         data.root = getName(newickTree)
@@ -340,12 +344,14 @@ class App extends Component {
         if (coordMatch) {
           const startPos = parseInt(coordMatch[1])
           const endPos = parseInt(coordMatch[2])
-          if (endPos + 1 - startPos === len)
+          if (endPos + 1 - startPos === len) {
             data.seqCoords[name] = { startPos, endPos }
+          }
         }
       }
-      if (!data.seqCoords[name])
-        data.seqCoords[name] = { startPos: 1, endPos: len } // if we can't guess the start coord, just assume it's the full-length sequence
+      if (!data.seqCoords[name]) {
+        data.seqCoords[name] = { startPos: 1, endPos: len }
+      } // if we can't guess the start coord, just assume it's the full-length sequence
     })
   }
 
@@ -362,10 +368,11 @@ class App extends Component {
     const structure = (data.structure = data.structure || {})
     data.rowData = stock.seqdata
     this.guessSeqCoords(data)
-    if (stock.gf.NH && !data.newick)
+    if (stock.gf.NH && !data.newick) {
       // did the Stockholm alignment include a tree?
       data.newick = stock.gf.NH.join('')
-    if (stock.gs.DR && !config.structure.noRemoteStructures)
+    }
+    if (stock.gs.DR && !config.structure.noRemoteStructures) {
       // did the Stockholm alignment include links to PDB?
       Object.keys(stock.gs.DR).forEach(node => {
         const seqCoords = data.seqCoords[node]
@@ -394,7 +401,7 @@ class App extends Component {
                 structure[node].push(pdbStruct)
               } else pdbStruct = structure[node][pdbIndex]
               pdbStruct.chains.push({ chain, startPos, endPos })
-            } else
+            } else {
               console.warn(
                 `ignoring structure ${pdb} (${startPos}...${endPos}) since it ${
                   fullLengthMatch
@@ -402,9 +409,11 @@ class App extends Component {
                     : `is not a full-length match to ${node} (${pdbLen}!=${seqLen})`
                 }`,
               )
+            }
           }
         })
       })
+    }
   }
 
   componentDidMount() {
@@ -441,19 +450,21 @@ class App extends Component {
   }
 
   componentDidUpdate() {
-    this.reconstructMissingNodes()
+    // this.reconstructMissingNodes()
   }
 
   // initDataset is called once, from componentDidMount
   async initDataset() {
     if (this.props.stockholm) this.addDatasets(this.props.stockholm, false)
-    if (this.props.dataurl)
+    if (this.props.dataurl) {
       await fetch(this.makeURL(this.props.dataurl)).then(async res => {
         if (res.ok) this.addDatasets(await res.text(), false)
       })
+    }
     this.nDatasetsInitial = this.state.datasets && this.state.datasets.length
-    if (this.props.data || this.state.datasets.length)
+    if (this.props.data || this.state.datasets.length) {
       this.setDataset(this.props.data || this.getInitialDataset())
+    }
   }
 
   getInitialDataset() {
@@ -472,48 +483,49 @@ class App extends Component {
     return 'alignid'
   }
 
-  reconstructMissingNodes() {
-    // check if any nodes are missing; if so, do ancestral sequence reconstruction
-    const { data } = this.state
-    let promise
-    if (data) {
-      const { branches } = data
-      const rowData = extend({}, data.rowData)
-      const missingAncestors = data.branches.filter(
-        b => typeof rowData[b[0]] === 'undefined',
-      ).length
-      if (missingAncestors && !this.state.reconstructingAncestors) {
-        this.setState({ reconstructingAncestors: true })
-        if (window.Worker) {
-          console.warn('Reconstructing ancestral sequences in web worker...')
-          const instance = getAncestralReconstructionWorker()
-          promise = instance
-            .getAncestralReconstruction({
-              branches,
-              rowData,
-              id: this.state.datasetID,
-            })
-            .then(result => {
-              console.warn('Ancestral sequence reconstruction complete')
-              if (result.id === this.state.datasetID)
-                this.incorporateAncestralReconstruction(result.ancestralRowData)
-              else
-                console.warn(
-                  'Discarding unused ancestral sequence reconstruction',
-                ) // guard against bug where ancestral reconstruction comes in after dataset has been changed
-            })
-        } else {
-          console.warn('Reconstructing ancestral sequences...')
-          promise = getAncestralReconstruction({ branches, rowData }).then(
-            result => {
-              this.incorporateAncestralReconstruction(result.ancestralRowData)
-            },
-          )
-        }
-      }
-    } else promise = Promise.resolve()
-    return promise
-  }
+  //   reconstructMissingNodes() {
+  //     // check if any nodes are missing; if so, do ancestral sequence reconstruction
+  //     const { data } = this.state
+  //     let promise
+  //     if (data) {
+  //       const { branches } = data
+  //       const rowData = extend({}, data.rowData)
+  //       const missingAncestors = data.branches.filter(
+  //         b => typeof rowData[b[0]] === 'undefined',
+  //       ).length
+  //       if (missingAncestors && !this.state.reconstructingAncestors) {
+  //         this.setState({ reconstructingAncestors: true })
+  //         if (window.Worker) {
+  //           console.warn('Reconstructing ancestral sequences in web worker...')
+  //           const instance = getAncestralReconstructionWorker()
+  //           promise = instance
+  //             .getAncestralReconstruction({
+  //               branches,
+  //               rowData,
+  //               id: this.state.datasetID,
+  //             })
+  //             .then(result => {
+  //               console.warn('Ancestral sequence reconstruction complete')
+  //               if (result.id === this.state.datasetID) {
+  //                 this.incorporateAncestralReconstruction(result.ancestralRowData)
+  //               } else {
+  //                 console.warn(
+  //                   'Discarding unused ancestral sequence reconstruction',
+  //                 )
+  //               } // guard against bug where ancestral reconstruction comes in after dataset has been changed
+  //             })
+  //         } else {
+  //           console.warn('Reconstructing ancestral sequences...')
+  //           promise = getAncestralReconstruction({ branches, rowData }).then(
+  //             result => {
+  //               this.incorporateAncestralReconstruction(result.ancestralRowData)
+  //             },
+  //           )
+  //         }
+  //       }
+  //     } else promise = Promise.resolve()
+  //     return promise
+  //   }
 
   fn2workerURL(fn) {
     const blob = new Blob([`(${fn.toString()})()`], {
@@ -573,14 +585,17 @@ class App extends Component {
     let { root } = data
     const rootSpecified = typeof root !== 'undefined'
     const roots = this.getRoots(branches)
-    if (roots.length === 0 && (branches.length > 0 || !rootSpecified))
+    if (roots.length === 0 && (branches.length > 0 || !rootSpecified)) {
       throw new Error('No root nodes')
+    }
     if (rootSpecified) {
-      if (roots.indexOf(root) < 0)
+      if (roots.indexOf(root) < 0) {
         throw new Error('Specified root node is not a root')
+      }
     } else {
-      if (roots.length !== 1)
+      if (roots.length !== 1) {
         throw new Error('Multiple possible root nodes, and no root specified')
+      }
       root = roots[0]
     }
     const children = {}
@@ -603,8 +618,9 @@ class App extends Component {
     let maxDistFromRoot = 0
     const addNode = node => {
       if (!node) throw new Error('All nodes must be named')
-      if (seenNode[node])
+      if (seenNode[node]) {
         throw new Error(`All node names must be unique (duplicate '${node}')`)
+      }
       seenNode[node] = true
       nodes.push(node)
     }
@@ -662,8 +678,9 @@ class App extends Component {
     let columns
     Object.keys(rowData).forEach(node => {
       const row = rowData[node]
-      if (typeof columns !== 'undefined' && columns !== row.length)
+      if (typeof columns !== 'undefined' && columns !== row.length) {
         console.error('Inconsistent row lengths')
+      }
       columns = row.length
       const pos2col = []
       let pos = 0

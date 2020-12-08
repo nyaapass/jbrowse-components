@@ -1,3 +1,4 @@
+/* eslint-disable react/prop-types */
 import React, { Component } from 'react'
 import { extend, isArray } from 'lodash'
 
@@ -79,10 +80,11 @@ class MSA extends Component {
     treeIndex.nodes
       .filter(node => nodeVisible[node])
       .forEach(node => {
-        if (rowDataAsArray[node])
+        if (rowDataAsArray[node]) {
           rowDataAsArray[node].forEach((c, col) => {
             if (!this.props.isGapChar(c)) columnVisible[col] = true
           })
+        }
       })
     return extend({ ancestorCollapsed, nodeVisible, columnVisible }, view)
   }
@@ -192,10 +194,11 @@ class MSA extends Component {
   create(type, parent, styles, attrs) {
     const element = document.createElement(type)
     if (parent) parent.appendChild(element)
-    if (attrs)
+    if (attrs) {
       Object.keys(attrs)
         .filter(attr => typeof attrs[attr] !== 'undefined')
         .forEach(attr => element.setAttribute(attr, attrs[attr]))
+    }
     if (styles) element.style = styles
     return element
   }
@@ -407,11 +410,12 @@ class MSA extends Component {
     const newlyHiddenColumns = []
     const persistingVisibleColumns = []
     for (let col = 0; col < alignIndex.columns; ++col) {
-      if (finalComputedView.columnVisible[col] !== columnVisible[col])
-        (finalComputedView.columnVisible[node]
+      if (finalComputedView.columnVisible[col] !== columnVisible[col]) {
+        ;(finalComputedView.columnVisible[node]
           ? newlyVisibleColumns
           : newlyHiddenColumns
         ).push(col)
+      }
       const colX = alignLayout.colX[col]
       const colWidth = alignLayout.colWidth[col]
       if (
@@ -419,8 +423,9 @@ class MSA extends Component {
         finalComputedView.columnVisible[col] &&
         colX >= left &&
         colX + colWidth < right
-      )
+      ) {
         persistingVisibleColumns.push(col)
+      }
     }
     // Compute the current centroid of the visible-before-and-after columns
     // Throughout the animation, we keep computing this and dynamically adjust alignScrollLeft so that it stays at the centroid of the current view
@@ -507,8 +512,9 @@ class MSA extends Component {
     if (
       alignScrollLeft !== this.state.alignScrollLeft ||
       scrollTop !== this.state.scrollTop
-    )
+    ) {
       this.setState({ alignScrollLeft, scrollTop })
+    }
   }
 
   handleMouseWheel(evt) {
@@ -571,9 +577,9 @@ class MSA extends Component {
 
   setHoverColumn(column) {
     this.setState({ hoverColumn: column })
-    if (column === null)
+    if (column === null) {
       this.structRef.current.removeLabelFromStructuresOnMouseout()
-    else this.structRef.current.addLabelToStructuresOnMouseover(column)
+    } else this.structRef.current.addLabelToStructuresOnMouseover(column)
   }
 
   handleMouseoverStructureResidue(structure, chain, pdbSeqPos) {
@@ -659,18 +665,20 @@ class MSA extends Component {
       }
     } else this.scrolling = false
 
-    if (updated)
+    if (updated) {
       this.requestAnimationFrame(() => {
         this.setState({ alignScrollLeft, scrollTop })
         this.lastX = evt.pageX
         this.lastY = evt.pageY
       })
+    }
   }
 
   // request animation frame
   requestAnimationFrame(callback) {
-    if (this.animationTimeout)
+    if (this.animationTimeout) {
       window.cancelAnimationFrame(this.animationTimeout)
+    }
     this.animationTimeout = window.requestAnimationFrame(callback)
   }
 

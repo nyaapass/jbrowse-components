@@ -1,3 +1,4 @@
+/* eslint-disable react/prop-types */
 import React, { Component } from 'react'
 import { isArray } from 'lodash'
 import pv from 'bio-pv'
@@ -136,7 +137,7 @@ class MSAStructPanel extends Component {
       if (colToSeqPos) {
         const seqPos = colToSeqPos[column]
         this.removeMouseoverLabels(s)
-        if (!isArray(s.structureInfo))
+        if (!isArray(s.structureInfo)) {
           s.structureInfo.chains.forEach(chainInfo => {
             const pdbSeqPos = seqPos + seqCoords.startPos
             if (
@@ -154,13 +155,14 @@ class MSAStructPanel extends Component {
               if (residues) {
                 residues.eachResidue(res => {
                   const label = `mouseover${s.mouseoverLabel.length + 1}`
-                  if (this.state.config.showMouseoverLabel)
+                  if (this.state.config.showMouseoverLabel) {
                     s.viewer.label(
                       label,
                       res.qualifiedName(),
                       res.centralAtom().pos(),
                       labelConfig,
                     )
+                  }
                   res.atoms().forEach(atom => {
                     if (!s.trueAtomColor[atom.index()]) {
                       const atomColor = [0, 0, 0, 0]
@@ -178,6 +180,7 @@ class MSAStructPanel extends Component {
               }
             }
           })
+        }
       }
     })
     this.requestRedrawStructures()
@@ -192,8 +195,9 @@ class MSAStructPanel extends Component {
 
   removeMouseoverLabels(structure) {
     structure.mouseoverLabel.forEach(labelInfo => {
-      if (this.state.config.showMouseoverLabel)
+      if (this.state.config.showMouseoverLabel) {
         structure.viewer.rm(labelInfo.label)
+      }
       const byColor = {}
       labelInfo.res.atoms().forEach(atom => {
         const trueColor = structure.trueAtomColor[atom.index()]

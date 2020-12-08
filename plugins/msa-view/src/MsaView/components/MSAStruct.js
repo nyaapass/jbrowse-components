@@ -1,7 +1,8 @@
+/* eslint-disable react/prop-types */
+/* eslint curly:error */
 import React, { Component } from 'react'
 import { Select, MenuItem } from '@material-ui/core'
 import CloseIcon from '@material-ui/icons/Close'
-import { isArray } from 'lodash'
 import pv from 'bio-pv'
 
 class MSAStruct extends Component {
@@ -11,17 +12,21 @@ class MSAStruct extends Component {
   }
 
   render() {
-    const wantStructure = isArray(this.props.structure.structureInfo)
-    const structureID = !wantStructure && this.props.structure.structureInfo.pdb
+    const {
+      structure,
+      config: { width, height },
+    } = this.props
+    const wantStructure = Array.isArray(structure.structureInfo)
+    const structureID = !wantStructure && structure.structureInfo.pdb
     return (
       <div
         className="MSA-structure"
         style={{
-          width: this.props.config.width,
-          height: this.props.config.height,
+          width,
+          height,
         }}
       >
-        <div className="MSA-structure-name">{this.props.structure.node}</div>
+        <div className="MSA-structure-name">{structure.node}</div>
 
         {structureID && (
           <div className="MSA-structure-label">{structureID}</div>
@@ -37,7 +42,7 @@ class MSAStruct extends Component {
               <MenuItem value="" disabled>
                 Select a structure
               </MenuItem>
-              {this.props.structure.structureInfo.map((info, n) => (
+              {structure.structureInfo.map((info, n) => (
                 <MenuItem key={n} value={info}>
                   {info.pdb}
                 </MenuItem>
@@ -83,7 +88,9 @@ class MSAStruct extends Component {
   }
 
   updatePv() {
-    if (!isArray(this.props.structure.structureInfo)) this.loadStructure()
+    if (!Array.isArray(this.props.structure.structureInfo)) {
+      this.loadStructure()
+    }
   }
 
   handleSelectStructure(evt) {
@@ -121,7 +128,9 @@ class MSAStruct extends Component {
             const seqPos = residue.num()
             const chain = residue.chain().name()
             this.props.handleMouseoverResidue(chain, seqPos)
-          } else this.props.handleMouseoverResidue(null, null)
+          } else {
+            this.props.handleMouseoverResidue(null, null)
+          }
         })
 
         this.pvDivRef.current.addEventListener('mouseleave', evt => {

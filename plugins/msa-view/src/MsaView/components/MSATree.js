@@ -1,25 +1,10 @@
+/* eslint-disable react/prop-types */
 import React, { Component } from 'react'
 
 class MSATree extends Component {
   constructor(props) {
     super(props)
     this.canvasRef = React.createRef()
-  }
-
-  render() {
-    const { treeWidth } = this.props.computedTreeConfig
-    const { treeHeight } = this.props.treeLayout
-    return (
-      <div className="MSA-tree" style={{ minWidth: treeWidth }}>
-        <canvas
-          className="MSA-tree-canvas"
-          ref={this.canvasRef}
-          width={treeWidth}
-          height={treeHeight}
-          style={{ top: -this.props.scrollTop }}
-        />
-      </div>
-    )
   }
 
   componentDidMount() {
@@ -30,6 +15,10 @@ class MSATree extends Component {
     )
   }
 
+  componentDidUpdate() {
+    this.renderTree()
+  }
+
   componentWillUnmount() {
     this.canvasRef.current.removeEventListener(
       'click',
@@ -37,8 +26,31 @@ class MSATree extends Component {
     )
   }
 
-  componentDidUpdate() {
-    this.renderTree()
+  handleClick(evt) {
+    evt.preventDefault()
+    const { treeLayout, handleNodeClick, config } = this.props
+    const mouseX = +evt.offsetX
+    const mouseY = +evt.offsetY
+    let closestNode
+    let closestNodeDistSquared
+    this.nodesWithHandles.forEach(node => {
+      const distSquared =
+        Math.pow(mouseX - treeLayout.nx[node], 2) +
+        Math.pow(mouseY - treeLayout.ny[node], 2)
+      if (
+        typeof closestNodeDistSquared === 'undefined' ||
+        distSquared < closestNodeDistSquared
+      ) {
+        closestNodeDistSquared = distSquared
+        closestNode = node
+      }
+    })
+    if (
+      closestNode &&
+      closestNodeDistSquared <= Math.pow(config.nodeHandleClickRadius, 2)
+    ) {
+      handleNodeClick(closestNode)
+    }
   }
 
   renderTree() {
@@ -129,9 +141,9 @@ class MSATree extends Component {
       if (
         collapsed[node] ||
         (forceDisplayNode[node] && collapsed[node] !== false)
-      )
+      ) {
         ctx.fillStyle = collapsedNodeHandleFillStyle
-      else {
+      } else {
         ctx.fillStyle = nodeHandleFillStyle
         ctx.stroke()
       }
@@ -140,31 +152,23 @@ class MSATree extends Component {
     this.nodesWithHandles = nodesWithHandles
   }
 
-  handleClick(evt) {
-    evt.preventDefault()
-    const { treeLayout } = this.props
-    const mouseX = parseInt(evt.offsetX)
-    const mouseY = parseInt(evt.offsetY)
-    let closestNode
-    let closestNodeDistSquared
-    this.nodesWithHandles.forEach(node => {
-      const distSquared =
-        Math.pow(mouseX - treeLayout.nx[node], 2) +
-        Math.pow(mouseY - treeLayout.ny[node], 2)
-      if (
-        typeof closestNodeDistSquared === 'undefined' ||
-        distSquared < closestNodeDistSquared
-      ) {
-        closestNodeDistSquared = distSquared
-        closestNode = node
-      }
-    })
-    if (
-      closestNode &&
-      closestNodeDistSquared <=
-        Math.pow(this.props.config.nodeHandleClickRadius, 2)
+  render() {
+    const {
+      computedTreeConfig: { treeWidth },
+      treeLayout: { treeHeight },
+      scrollTop,
+    } = this.props
+    return (
+      <div className="MSA-tree" style={{ minWidth: treeWidth }}>
+        <canvas
+          className="MSA-tree-canvas"
+          ref={this.canvasRef}
+          width={treeWidth}
+          height={treeHeight}
+          style={{ top: -scrollTop }}
+        />
+      </div>
     )
-      this.props.handleNodeClick(closestNode)
   }
 }
 

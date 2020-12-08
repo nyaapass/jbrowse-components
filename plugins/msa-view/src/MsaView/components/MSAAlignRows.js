@@ -1,3 +1,4 @@
+/* eslint-disable react/prop-types */
 import React, { Component } from 'react'
 
 import MSAAlignCanvas from './MSAAlignCanvas'
@@ -10,8 +11,19 @@ class MSAAlignRows extends Component {
   }
 
   render() {
-    const { treeHeight } = this.props.treeLayout
-    const { alignWidth } = this.props.alignLayout
+    const {
+      treeLayout,
+      alignLayout,
+      data,
+      alignIndex,
+      treeIndex,
+      computedFontConfig,
+      scrollLeft,
+      scrollTop,
+      hoverColumn,
+    } = this.props
+    const { treeHeight } = treeLayout
+    const { alignWidth } = alignLayout
 
     return (
       <div
@@ -22,24 +34,24 @@ class MSAAlignRows extends Component {
       >
         <MSAAlignCanvas
           ref={this.alignCanvasRef}
-          data={this.props.data}
-          treeIndex={this.props.treeIndex}
-          alignIndex={this.props.alignIndex}
-          treeLayout={this.props.treeLayout}
-          alignLayout={this.props.alignLayout}
-          computedFontConfig={this.props.computedFontConfig}
-          scrollLeft={this.props.scrollLeft}
-          scrollTop={this.props.scrollTop}
+          data={data}
+          treeIndex={treeIndex}
+          alignIndex={alignIndex}
+          treeLayout={treeLayout}
+          alignLayout={alignLayout}
+          computedFontConfig={computedFontConfig}
+          scrollLeft={scrollLeft}
+          scrollTop={scrollTop}
         />
 
         {this.props.hoverColumn !== null ? (
           <div
             className="MSA-alignment-column-cursor"
             style={{
-              left: this.props.alignLayout.colX[this.props.hoverColumn],
+              left: alignLayout.colX[hoverColumn],
               top: 0,
-              width: this.props.alignLayout.colWidth[this.props.hoverColumn],
-              height: this.props.treeLayout.treeHeight,
+              width: alignLayout.colWidth[hoverColumn],
+              height: treeLayout.treeHeight,
             }}
           />
         ) : (
@@ -128,18 +140,22 @@ class MSAAlignRows extends Component {
     const y = parseInt(evt.nativeEvent.offsetY)
     let row
     let column
-    for (row = 0; row < treeIndex.nodes.length - 1; ++row)
+    for (row = 0; row < treeIndex.nodes.length - 1; ++row) {
       if (
         treeLayout.rowY[row] <= y &&
         treeLayout.rowY[row] + treeLayout.rowHeight[row] > y
-      )
+      ) {
         break
-    for (column = 0; column < alignIndex.columns - 1; ++column)
+      }
+    }
+    for (column = 0; column < alignIndex.columns - 1; ++column) {
       if (
         alignLayout.colX[column] <= x &&
         alignLayout.colX[column] + alignLayout.colWidth[column] > x
-      )
+      ) {
         break
+      }
+    }
     const node = treeIndex.nodes[row]
     const colToSeqPos = alignIndex.alignColToSeqPos[node]
     const seqPos = colToSeqPos && colToSeqPos[column]

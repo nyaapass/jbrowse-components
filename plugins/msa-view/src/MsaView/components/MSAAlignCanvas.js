@@ -1,3 +1,4 @@
+/* eslint-disable react/prop-types */
 import React, { Component } from 'react'
 
 class MSAAlignCanvas extends Component {
@@ -55,8 +56,9 @@ class MSAAlignCanvas extends Component {
     if (
       clientWidth !== this.state.clientWidth ||
       clientHeight !== this.state.clientHeight
-    )
+    ) {
       this.setState({ clientWidth, clientHeight })
+    }
   }
 
   componentDidMount() {
@@ -99,7 +101,7 @@ class MSAAlignCanvas extends Component {
       const xScale = alignLayout.computedColScale[col]
       const colX = alignLayout.colX[col]
       const width = alignLayout.colWidth[col]
-      if (xScale && colX + width >= left)
+      if (xScale && colX + width >= left) {
         for (let row = firstRow; row <= lastRow; ++row) {
           const yScale = treeLayout.computedRowScale[row]
           const rowY = treeLayout.rowY[row]
@@ -139,6 +141,7 @@ class MSAAlignCanvas extends Component {
             }
           }
         }
+      }
     }
   }
 }
