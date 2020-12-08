@@ -1,6 +1,5 @@
 /* eslint-disable react/prop-types,react/sort-comp */
 import React, { Component } from 'react'
-
 import { withStyles } from '@material-ui/core/styles'
 import MSAAlignCanvas from './MSAAlignCanvas'
 

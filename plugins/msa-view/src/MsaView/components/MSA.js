@@ -347,7 +347,9 @@ class MSA extends Component {
     const { structure } = this.props.data
     this.nStructs = (this.nStructs || 0) + 1
     let info = structure[node]
-    if (isArray(info) && info.length === 1) info = info[0]
+    if (Array.isArray(info) && info.length === 1) {
+      info = info[0]
+    }
     const newStructure = {
       node,
       structureInfo: info,

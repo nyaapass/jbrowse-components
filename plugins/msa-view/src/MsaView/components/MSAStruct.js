@@ -2,8 +2,57 @@
 /* eslint curly:error */
 import React, { Component } from 'react'
 import { Select, MenuItem } from '@material-ui/core'
+import { withStyles } from '@material-ui/core/styles'
 import CloseIcon from '@material-ui/icons/Close'
 import pv from 'bio-pv'
+
+const styles = {
+  structurePanel: {
+    flexShrink: '0',
+    display: 'flex',
+    flexDirection: 'column',
+  },
+  structures: {
+    display: 'flex',
+    flexDirection: 'row',
+    overflowX: 'scroll',
+    overflowY: 'auto',
+  },
+  structure: {
+    position: 'relative',
+    borderStyle: 'solid',
+    borderColor: 'black',
+    borderWidth: '1px',
+    paddingTop: '2px',
+    margin: '1px',
+    display: 'flex',
+    flexDirection: 'column',
+  },
+  structureName: {
+    position: 'absolute',
+    bottom: '2px',
+    right: '2px',
+    fontSize: 'small',
+    zIndex: '1',
+    background: 'rgba(255, 255, 255, 0.8)',
+  },
+  structureLabel: {
+    position: 'absolute',
+    bottom: '2px',
+    left: '2px',
+    fontSize: 'small',
+    zIndex: '1',
+    background: 'rgba(255, 255, 255, 0.8)',
+  },
+  structureTop: {
+    paddingLeft: '2px',
+    paddingRight: '2px',
+    height: '1.5em',
+    zIndex: '1',
+  },
+  closeButton: { float: 'right', ' cursor': 'pointer' },
+  structurePv: { position: 'absolute', ' top': '0', ' left': '0' },
+}
 
 class MSAStruct extends Component {
   constructor(props) {
@@ -15,24 +64,25 @@ class MSAStruct extends Component {
     const {
       structure,
       config: { width, height },
+      classes,
     } = this.props
     const wantStructure = Array.isArray(structure.structureInfo)
     const structureID = !wantStructure && structure.structureInfo.pdb
     return (
       <div
-        className="MSA-structure"
+        className={classes.structure}
         style={{
           width,
           height,
         }}
       >
-        <div className="MSA-structure-name">{structure.node}</div>
+        <div className={classes.structureName}>{structure.node}</div>
 
         {structureID && (
-          <div className="MSA-structure-label">{structureID}</div>
+          <div className={classes.structureLabel}>{structureID}</div>
         )}
 
-        <div className="MSA-structure-top">
+        <div className={classes.structureTop}>
           {wantStructure && (
             <Select
               value=""
@@ -49,12 +99,12 @@ class MSAStruct extends Component {
               ))}
             </Select>
           )}
-          <div className="MSA-structure-close-button">
+          <div className={classes.closeButton}>
             <CloseIcon onClick={this.handleClose.bind(this)} />
           </div>
         </div>
 
-        <div className="MSA-structure-pv" ref={this.pvDivRef} />
+        <div className={classes.structurePv} ref={this.pvDivRef} />
       </div>
     )
   }
@@ -146,4 +196,4 @@ class MSAStruct extends Component {
   }
 }
 
-export default MSAStruct
+export default withStyles(styles)(MSAStruct)

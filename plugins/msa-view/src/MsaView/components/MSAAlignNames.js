@@ -1,5 +1,6 @@
 /* eslint-disable react/prop-types */
 import React, { Component } from 'react'
+import { withStyles } from '@material-ui/core/styles'
 
 const styles = {
   alignmentNames: {
@@ -31,14 +32,14 @@ const styles = {
 class MSAAlignNames extends Component {
   render() {
     const {
-      data,
+      data: { structure = {} },
       computedFontConfig,
       treeIndex,
       config,
       computedView,
       treeLayout,
+      classes,
     } = this.props
-    const structure = data.structure || {}
     const { nameDivWidth } = config
     const { nameFontName, nameFontSize } = computedFontConfig
 

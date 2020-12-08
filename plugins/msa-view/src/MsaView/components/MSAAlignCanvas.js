@@ -1,5 +1,6 @@
-/* eslint-disable react/prop-types */
+/* eslint-disable react/prop-types,react/sort-comp */
 import React, { Component } from 'react'
+import { withStyles } from '@material-ui/core/styles'
 
 const styles = {
   alignmentCanvas: {

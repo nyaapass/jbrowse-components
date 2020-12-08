@@ -1,5 +1,6 @@
 /* eslint-disable react/prop-types */
 import React, { Component } from 'react'
+import { withStyles } from '@material-ui/core/styles'
 
 const styles = {
   tree: { overflowX: 'scroll', overflowY: 'hidden' },
@@ -161,6 +162,7 @@ class MSATree extends Component {
       computedTreeConfig: { treeWidth },
       treeLayout: { treeHeight },
       scrollTop,
+      classes,
     } = this.props
     return (
       <div className={classes.tree} style={{ minWidth: treeWidth }}>
