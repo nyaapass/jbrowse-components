@@ -1,6 +1,33 @@
 /* eslint-disable react/prop-types */
 import React, { Component } from 'react'
 
+const styles = {
+  alignmentNames: {
+    marginLeft: '2px',
+    marginRight: '2px',
+    overflowX: 'scroll',
+    overflowY: 'hidden',
+    flexShrink: '0',
+    whiteSpace: 'nowrap',
+  },
+  alignmentNamesContent: {
+    position: 'relative',
+  },
+  alignmentName: {
+    display: 'flex',
+    flexDirection: 'column',
+    justifyContent: 'center',
+  },
+  alignmentNameLink: {
+    color: 'blue',
+    cursor: 'pointer',
+    textDecoration: 'underline',
+    '&:active': {
+      color: 'red',
+    },
+  },
+}
+
 class MSAAlignNames extends Component {
   render() {
     const {
@@ -19,7 +46,7 @@ class MSAAlignNames extends Component {
 
     return (
       <div
-        className="MSA-alignment-names"
+        className={classes.alignmentNames}
         style={{
           fontFamily: nameFontName,
           fontSize: `${nameFontSize}px`,
@@ -27,7 +54,7 @@ class MSAAlignNames extends Component {
         }}
       >
         <div
-          className="MSA-alignment-names-content"
+          className={classes.alignmentNamesContent}
           style={{ top: -this.props.scrollTop }}
         >
           {treeIndex.nodes
@@ -40,10 +67,10 @@ class MSAAlignNames extends Component {
                 style.opacity = scale
               }
               return (
-                <div className="MSA-alignment-name" key={node} style={style}>
+                <div className={classes.alignmentName} key={node} style={style}>
                   {structure[node] ? (
                     <span
-                      className="MSA-alignment-name-link"
+                      className={classes.alignmentNameLink}
                       onClick={() => this.props.handleNameClick(node)}
                       style={{
                         fontFamily: nameFontName,
@@ -64,4 +91,4 @@ class MSAAlignNames extends Component {
   }
 }
 
-export default MSAAlignNames
+export default withStyles(styles)(MSAAlignNames)

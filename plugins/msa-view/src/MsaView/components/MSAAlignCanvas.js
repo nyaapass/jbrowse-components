@@ -1,6 +1,14 @@
 /* eslint-disable react/prop-types */
 import React, { Component } from 'react'
 
+const styles = {
+  alignmentCanvas: {
+    position: 'absolute',
+    overflow: 'hidden',
+    pointerEvents: 'none',
+  },
+}
+
 class MSAAlignCanvas extends Component {
   constructor(props) {
     super(props)
@@ -10,10 +18,11 @@ class MSAAlignCanvas extends Component {
 
   render() {
     const { top, left, width, height } = this.getDimensions()
+    const { classes } = this.props
     return (
       <canvas
         ref={this.canvasRef}
-        className="MSA-alignment-canvas"
+        className={classes.alignmentCanvas}
         width={width}
         height={height}
         style={{ top, left }}
@@ -146,4 +155,4 @@ class MSAAlignCanvas extends Component {
   }
 }
 
-export default MSAAlignCanvas
+export default withStyles(styles)(MSAAlignCanvas)

@@ -1,72 +1,26 @@
-/* eslint-disable react/prop-types */
+/* eslint-disable react/prop-types,react/sort-comp */
 import React, { Component } from 'react'
 
+import { withStyles } from '@material-ui/core/styles'
 import MSAAlignCanvas from './MSAAlignCanvas'
 
+const styles = {
+  alignmentRows: {
+    position: 'relative',
+    overflowX: 'scroll',
+    overflowY: 'scroll',
+    padding: '1px',
+    cursor: 'move',
+  },
+  alignmentRowsBack: {
+    zIndex: 2,
+  },
+}
 class MSAAlignRows extends Component {
   constructor(props) {
     super(props)
     this.rowsDivRef = React.createRef()
     this.alignCanvasRef = React.createRef()
-  }
-
-  render() {
-    const {
-      treeLayout,
-      alignLayout,
-      data,
-      alignIndex,
-      treeIndex,
-      computedFontConfig,
-      scrollLeft,
-      scrollTop,
-      hoverColumn,
-    } = this.props
-    const { treeHeight } = treeLayout
-    const { alignWidth } = alignLayout
-
-    return (
-      <div
-        className="MSA-alignment-rows"
-        ref={this.rowsDivRef}
-        onClick={this.handleClick.bind(this)}
-        onScroll={this.handleScroll.bind(this)}
-      >
-        <MSAAlignCanvas
-          ref={this.alignCanvasRef}
-          data={data}
-          treeIndex={treeIndex}
-          alignIndex={alignIndex}
-          treeLayout={treeLayout}
-          alignLayout={alignLayout}
-          computedFontConfig={computedFontConfig}
-          scrollLeft={scrollLeft}
-          scrollTop={scrollTop}
-        />
-
-        {this.props.hoverColumn !== null ? (
-          <div
-            className="MSA-alignment-column-cursor"
-            style={{
-              left: alignLayout.colX[hoverColumn],
-              top: 0,
-              width: alignLayout.colWidth[hoverColumn],
-              height: treeLayout.treeHeight,
-            }}
-          />
-        ) : (
-          ''
-        )}
-
-        <div
-          className="MSA-alignment-rows-back"
-          style={{ width: alignWidth, height: treeHeight }}
-          onMouseMove={this.handleMouseMove.bind(this)}
-          onMouseLeave={this.handleMouseLeave.bind(this)}
-          onMouseDown={this.handleMouseDown.bind(this)}
-        />
-      </div>
-    )
   }
 
   componentDidUpdate() {
@@ -164,6 +118,65 @@ class MSAAlignRows extends Component {
     const isGap = this.props.isGapChar(c)
     return { row, column, node, seqPos, c, isGap }
   }
+
+  render() {
+    const {
+      treeLayout,
+      alignLayout,
+      data,
+      alignIndex,
+      treeIndex,
+      computedFontConfig,
+      scrollLeft,
+      scrollTop,
+      hoverColumn,
+      classes,
+    } = this.props
+    const { treeHeight } = treeLayout
+    const { alignWidth } = alignLayout
+
+    return (
+      <div
+        className={classes.alignmentRows}
+        ref={this.rowsDivRef}
+        onClick={this.handleClick.bind(this)}
+        onScroll={this.handleScroll.bind(this)}
+      >
+        <MSAAlignCanvas
+          ref={this.alignCanvasRef}
+          data={data}
+          treeIndex={treeIndex}
+          alignIndex={alignIndex}
+          treeLayout={treeLayout}
+          alignLayout={alignLayout}
+          computedFontConfig={computedFontConfig}
+          scrollLeft={scrollLeft}
+          scrollTop={scrollTop}
+        />
+
+        {this.props.hoverColumn !== null ? (
+          <div
+            style={{
+              left: alignLayout.colX[hoverColumn],
+              top: 0,
+              width: alignLayout.colWidth[hoverColumn],
+              height: treeLayout.treeHeight,
+            }}
+          />
+        ) : (
+          ''
+        )}
+
+        <div
+          className={classes.alignmentRowsBack}
+          style={{ width: alignWidth, height: treeHeight }}
+          onMouseMove={this.handleMouseMove.bind(this)}
+          onMouseLeave={this.handleMouseLeave.bind(this)}
+          onMouseDown={this.handleMouseDown.bind(this)}
+        />
+      </div>
+    )
+  }
 }
 
-export default MSAAlignRows
+export default withStyles(styles)(MSAAlignRows)

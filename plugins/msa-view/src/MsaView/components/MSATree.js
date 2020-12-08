@@ -1,6 +1,10 @@
 /* eslint-disable react/prop-types */
 import React, { Component } from 'react'
 
+const styles = {
+  tree: { overflowX: 'scroll', overflowY: 'hidden' },
+  treeCanvas: { position: 'relative' },
+}
 class MSATree extends Component {
   constructor(props) {
     super(props)
@@ -159,9 +163,9 @@ class MSATree extends Component {
       scrollTop,
     } = this.props
     return (
-      <div className="MSA-tree" style={{ minWidth: treeWidth }}>
+      <div className={classes.tree} style={{ minWidth: treeWidth }}>
         <canvas
-          className="MSA-tree-canvas"
+          className={classes.treeCanvas}
           ref={this.canvasRef}
           width={treeWidth}
           height={treeHeight}
@@ -172,4 +176,4 @@ class MSATree extends Component {
   }
 }
 
-export default MSATree
+export default withStyles(styles)(MSATree)

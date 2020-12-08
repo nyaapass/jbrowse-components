@@ -1,22 +1,38 @@
-/* eslint-disable react/prop-types */
+/* eslint-disable react/prop-types,react/sort-comp */
 import React, { Component } from 'react'
-import { extend, isArray } from 'lodash'
 
+import { withStyles } from '@material-ui/core/styles'
 import MSATree from './MSATree'
 import MSAAlignNames from './MSAAlignNames'
 import MSAAlignRows from './MSAAlignRows'
-import MSAStructPanel from './MSAStructPanel'
+
+const styles = {
+  MSA: {
+    display: 'flex',
+    flexDirection: 'column',
+  },
+  treeAlignment: {
+    display: 'flex',
+    flexDirection: 'row',
+    overflow: 'hidden',
+    borderStyle: 'solid',
+    borderColor: 'black',
+    borderWidth: '1px',
+  },
+}
 
 class MSA extends Component {
   constructor(props) {
     super(props)
 
-    const view = extend(this.initialView(), props.view || {})
+    const view = Object.assign(this.initialView(), props.view || {})
 
-    this.state = extend(
-      { scrollTop: 0, alignScrollLeft: 0, hoverColumn: null },
-      { view },
-    )
+    this.state = {
+      scrollTop: 0,
+      alignScrollLeft: 0,
+      hoverColumn: null,
+      view,
+    }
 
     this.rowsRef = React.createRef()
     this.msaRef = React.createRef()
@@ -86,7 +102,12 @@ class MSA extends Component {
           })
         }
       })
-    return extend({ ancestorCollapsed, nodeVisible, columnVisible }, view)
+    return {
+      ancestorCollapsed,
+      nodeVisible,
+      columnVisible,
+      ...view,
+    }
   }
 
   // layout tree
@@ -207,6 +228,7 @@ class MSA extends Component {
     const computedView = this.getComputedView()
     const treeLayout = this.layoutTree(computedView)
     const alignLayout = this.layoutAlignment(computedView)
+    const { classes } = this.props
 
     // record the dimensions for drag handling
     this.treeHeight = treeLayout.treeHeight
@@ -214,14 +236,14 @@ class MSA extends Component {
 
     return (
       <div
-        className="MSA"
+        className={classes.MSA}
         style={{
           width: this.props.config.containerWidth,
           height: this.props.config.containerHeight,
         }}
       >
         <div
-          className="MSA-tree-alignment"
+          className={classes.treeAlignment}
           ref={this.msaRef}
           onMouseDown={this.handleMouseDown.bind(this)}
           style={{
@@ -276,20 +298,6 @@ class MSA extends Component {
             hoverColumn={this.state.hoverColumn}
           />
         </div>
-
-        <MSAStructPanel
-          ref={this.structRef}
-          initConfig={this.props.config.structure}
-          seqCoords={this.props.data.seqCoords}
-          alignIndex={this.props.alignIndex}
-          structures={this.state.view.structure.openStructures}
-          updateStructure={this.updateStructure.bind(this)}
-          handleCloseStructure={this.handleCloseStructure.bind(this)}
-          handleMouseoverResidue={this.handleMouseoverStructureResidue.bind(
-            this,
-          )}
-          setTimer={this.setTimer.bind(this)}
-        />
       </div>
     )
   }
@@ -341,7 +349,7 @@ class MSA extends Component {
   updateStructure(structure, newStructure) {
     const { view } = this.state
     view.structure.openStructures = view.structure.openStructures.map(s =>
-      s === structure ? extend(s, newStructure) : s,
+      s === structure ? Object.assign(s, newStructure) : s,
     )
     this.setState({ view })
   }
@@ -395,12 +403,12 @@ class MSA extends Component {
     // As noted in the comments for layoutAlignment(), a possible performance optimization would be to do a lazy layout, starting with a column known to be in the view, and stopping when offscreen.
     // This might necessitate maintaining some internal state about which column is currently being used as the "origin" for layout purposes.
     const wasCollapsed = collapsed[node]
-    const finalCollapsed = extend({}, collapsed)
+    const finalCollapsed = { ...collapsed }
     if (wasCollapsed) {
       collapsed[node] = false // when collapsed[node]=false (vs undefined), it's rendered by renderTree() as a collapsed node, but its descendants are still visible. A bit of a hack...
       delete finalCollapsed[node]
     } else finalCollapsed[node] = true
-    const finalForceDisplayNode = extend({}, forceDisplayNode)
+    const finalForceDisplayNode = { ...forceDisplayNode }
     finalForceDisplayNode[node] = !wasCollapsed
     const finalComputedView = this.getComputedView({
       collapsed: finalCollapsed,
@@ -469,14 +477,15 @@ class MSA extends Component {
         disableTreeEvents = false
         animating = false
       }
-      const view = extend({}, this.state.view, {
+      const view = {
+        ...this.state.view,
         collapsed: newCollapsed,
         forceDisplayNode,
         nodeScale,
         columnScale,
         disableTreeEvents,
         animating,
-      })
+      }
       const computedView = this.getComputedView(view)
       const alignLayout = this.layoutAlignment(computedView)
       const alignScrollLeft = this.boundAlignScrollLeft(
@@ -577,9 +586,6 @@ class MSA extends Component {
 
   setHoverColumn(column) {
     this.setState({ hoverColumn: column })
-    if (column === null) {
-      this.structRef.current.removeLabelFromStructuresOnMouseout()
-    } else this.structRef.current.addLabelToStructuresOnMouseover(column)
   }
 
   handleMouseoverStructureResidue(structure, chain, pdbSeqPos) {
@@ -701,4 +707,4 @@ class MSA extends Component {
   }
 }
 
-export default MSA
+export default withStyles(styles)(MSA)

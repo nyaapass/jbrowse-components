@@ -1,8 +1,7 @@
+/* eslint curly:error*/
 /* eslint-disable react/prop-types */
 import React, { Component } from 'react'
-import { Select, MenuItem } from '@material-ui/core'
-import queryString from 'query-string'
-import './App.css'
+import { withStyles } from '@material-ui/core/styles'
 
 // eslint-disable-next-line import/no-webpack-loader-syntax
 
@@ -11,9 +10,40 @@ import { Newick } from 'newick'
 import JukesCantor from 'jukes-cantor'
 import RapidNeighborJoining from 'neighbor-joining'
 // import { getAncestralReconstruction } from './reconstruction'
+import { makeStyles } from '@material-ui/core/styles'
 import colorSchemes from './colorSchemes'
 
 import MSA from './MSA'
+
+const styles = {
+  appBar: {
+    display: 'flex',
+    flexDirection: 'row',
+    fontSize: 'large',
+    fontStyle: 'italic',
+  },
+  appBarTitle: {
+    textAlign: 'left',
+    paddingTop: '2px',
+    paddingLeft: '2px',
+  },
+  appBarLink: {
+    textAlign: 'right',
+    flexGrow: '1',
+    padding: '2px',
+  },
+
+  alignmentColumnCursor: {
+    position: 'absolute',
+    zIndex: '1',
+    borderStyle: 'solid',
+    borderWidth: '1px',
+    borderColor: 'black',
+    backgroundColor: 'black',
+    opacity: '0.1',
+    pointerEvents: 'none',
+  },
+}
 
 class App extends Component {
   constructor(props) {
@@ -83,7 +113,9 @@ class App extends Component {
     window.onpopstate = event => {
       if (event && event.state && event.state.data) {
         this.setDataset(event.state.data)
-      } else window.location.reload()
+      } else {
+        window.location.reload()
+      }
     }
   }
 
@@ -102,29 +134,6 @@ class App extends Component {
     evt.stopPropagation()
     evt.preventDefault()
     this.openFiles(evt.dataTransfer.files)
-  }
-
-  handleSelectDataset(evt) {
-    const name = evt.target.value
-    if (name) {
-      const nAlign = this.state.datasets.findIndex(ds => ds.name === name)
-      const data = this.state.datasets[nAlign]
-      this.setDataset(data)
-      this.msaRef.current.resetView()
-      if (nAlign < this.nDatasetsInitial) {
-        // don't URL-encode dataset if it's one we added after loading
-        const newState = queryString.parse(window.location.search)
-        delete newState[this.alignIdQueryParam]
-        delete newState[this.nAlignQueryParam]
-        if (data.id) newState[this.alignIdQueryParam] = data.id
-        else newState[this.nAlignQueryParam] = nAlign
-        window.history.pushState(
-          { data },
-          document.title,
-          `?${queryString.stringify(newState)}`,
-        )
-      }
-    } else this.inputRef.current.click()
   }
 
   handleSelectFile(evt) {
@@ -172,17 +181,25 @@ class App extends Component {
     } else {
       try {
         const json = JSON.parse(text)
-        if (Array.isArray(json)) datasets = datasets.concat(json)
-        else datasets.push(json)
+        if (Array.isArray(json)) {
+          datasets = datasets.concat(json)
+        } else {
+          datasets.push(json)
+        }
       } catch (e) {
         datasets.push({ auto: text, name: newAlignmentName() })
       }
     }
     if (datasets.length > this.state.datasets.length) {
       const firstDataset = datasets[this.state.datasets.length]
-      if (autoselect) this.setDataset(firstDataset, { datasets })
-      else this.setState({ datasets })
-      if (this.msaRef.current) this.msaRef.current.resetView()
+      if (autoselect) {
+        this.setDataset(firstDataset, { datasets })
+      } else {
+        this.setState({ datasets })
+      }
+      if (this.msaRef.current) {
+        this.msaRef.current.resetView()
+      }
     }
   }
 
@@ -235,8 +252,11 @@ class App extends Component {
           .map(key => {
             const url = this.makeURL(data.url[key])
             return fetch(url).then(async res => {
-              if (res.ok) data[key] = await res.text()
-              else console.warn(`Error fetching ${url}`, res.statusText)
+              if (res.ok) {
+                data[key] = await res.text()
+              } else {
+                console.warn(`Error fetching ${url}`, res.statusText)
+              }
             })
           }),
       )
@@ -248,9 +268,11 @@ class App extends Component {
       )
     }
     if (data.auto) {
-      if (this.sniffStockholmRegex.test(data.auto)) data.stockholm = data.auto
-      else if (this.sniffFastaRegex.test(data.auto)) data.fasta = data.auto
-      else {
+      if (this.sniffStockholmRegex.test(data.auto)) {
+        data.stockholm = data.auto
+      } else if (this.sniffFastaRegex.test(data.auto)) {
+        data.fasta = data.auto
+      } else {
         try {
           Object.assign(data, JSON.parse(data.auto))
         } catch (e) {
@@ -268,7 +290,9 @@ class App extends Component {
       } else if (data.fasta) {
         // was a FASTA-format alignment specified?
         data.rowData = this.parseFasta(data.fasta)
-      } else throw new Error('no sequence data')
+      } else {
+        throw new Error('no sequence data')
+      }
       // If a Newick-format tree was specified somehow (as a separate data item, or in the Stockholm alignment) then parse it
       if (data.newick || data.newickjs) {
         const NewickParser = new Newick()
@@ -333,7 +357,9 @@ class App extends Component {
   // This allows us to align to partial structures
   // This is pretty hacky; the user can alternatively pass these in through the data.seqCoords field
   guessSeqCoords(data) {
-    if (!data.seqCoords) data.seqCoords = {}
+    if (!data.seqCoords) {
+      data.seqCoords = {}
+    }
     Object.keys(data.rowData).forEach(name => {
       const seq = data.rowData[name]
       const len = this.countNonGapChars(seq)
@@ -397,7 +423,9 @@ class App extends Component {
               if (pdbIndex < 0) {
                 pdbStruct = { pdb, chains: [] }
                 structure[node].push(pdbStruct)
-              } else pdbStruct = structure[node][pdbIndex]
+              } else {
+                pdbStruct = structure[node][pdbIndex]
+              }
               pdbStruct.chains.push({ chain, startPos, endPos })
             } else {
               console.warn(
@@ -453,10 +481,14 @@ class App extends Component {
 
   // initDataset is called once, from componentDidMount
   async initDataset() {
-    if (this.props.stockholm) this.addDatasets(this.props.stockholm, false)
+    if (this.props.stockholm) {
+      this.addDatasets(this.props.stockholm, false)
+    }
     if (this.props.dataurl) {
       await fetch(this.makeURL(this.props.dataurl)).then(async res => {
-        if (res.ok) this.addDatasets(await res.text(), false)
+        if (res.ok) {
+          this.addDatasets(await res.text(), false)
+        }
       })
     }
     this.nDatasetsInitial = this.state.datasets && this.state.datasets.length
@@ -466,11 +498,7 @@ class App extends Component {
   }
 
   getInitialDataset() {
-    const params = queryString.parse(window.location.search)
-    const id = params[this.alignIdQueryParam]
-    const n = params[this.nAlignQueryParam]
-    if (id) return this.state.datasets.find(data => data.id === id)
-    return this.state.datasets[n || 0]
+    return this.state.datasets[0]
   }
 
   get nAlignQueryParam() {
@@ -571,8 +599,11 @@ class App extends Component {
     const re = /^>(\S+)/
     fasta.split('\n').forEach(line => {
       const match = re.exec(line)
-      if (match) seq[(name = match[1])] = ''
-      else if (name) seq[name] = seq[name] + line.replace(/[ \t]/g, '')
+      if (match) {
+        seq[(name = match[1])] = ''
+      } else if (name) {
+        seq[name] = seq[name] + line.replace(/[ \t]/g, '')
+      }
     })
     return seq
   }
@@ -615,7 +646,9 @@ class App extends Component {
     const distFromRoot = {}
     let maxDistFromRoot = 0
     const addNode = node => {
-      if (!node) throw new Error('All nodes must be named')
+      if (!node) {
+        throw new Error('All nodes must be named')
+      }
       if (seenNode[node]) {
         throw new Error(`All node names must be unique (duplicate '${node}')`)
       }
@@ -684,9 +717,13 @@ class App extends Component {
       let pos = 0
       const rowAsArray = this.rowAsArray(row)
       alignColToSeqPos[node] = rowAsArray.map((c, col) => {
-        if (typeof c === 'string') isChar[c] = true
+        if (typeof c === 'string') {
+          isChar[c] = true
+        }
         const isGap = this.isGapChar(c)
-        if (!isGap) pos2col.push(col)
+        if (!isGap) {
+          pos2col.push(col)
+        }
         return isGap ? pos : pos++
       })
       rowDataAsArray[node] = rowAsArray
@@ -718,9 +755,10 @@ class App extends Component {
   }
 
   render() {
+    const { classes } = this.props
     return (
       <div className="App" ref={this.divRef}>
-        <div className="MSA-appbar">
+        <div className={classes.appBar}>
           <input
             type="file"
             ref={this.inputRef}
@@ -728,29 +766,7 @@ class App extends Component {
             style={{ display: 'none' }}
           />
 
-          {this.state.data ? (
-            this.state.datasets.length ? (
-              <Select
-                value={this.state.data.name}
-                onChange={this.handleSelectDataset.bind(this)}
-              >
-                {this.state.datasets.map(data => (
-                  <MenuItem key={data.name} value={data.name}>
-                    {data.name}
-                  </MenuItem>
-                ))}
-                <MenuItem value="">
-                  <i>Open alignment file</i>
-                </MenuItem>
-              </Select>
-            ) : (
-              <div className="MSA-appbar-title">{this.state.data.name}</div>
-            )
-          ) : (
-            ''
-          )}
-
-          <div className="MSA-appbar-link">
+          <div className={classes.appBarLink}>
             <a
               target="_blank"
               rel="noopener noreferrer"
@@ -779,4 +795,4 @@ class App extends Component {
   }
 }
 
-export default App
+export default withStyles(styles)(App)

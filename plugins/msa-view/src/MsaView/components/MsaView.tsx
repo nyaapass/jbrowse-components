@@ -1,7 +1,6 @@
 import React from 'react'
 import { observer } from 'mobx-react'
 
-import ImportForm from './ImportForm'
 import { MsaViewModel } from '../model'
 import App from './App'
 
@@ -188,10 +187,10 @@ const opts = {
 }
 export default () => {
   return observer(({ model }: { model: MsaViewModel }) => {
-    const { width, height, initialized } = model
+    const { initialized } = model
 
     if (!initialized) {
-      return <ImportForm model={model} />
+      return null
     }
 
     return <App {...opts} />

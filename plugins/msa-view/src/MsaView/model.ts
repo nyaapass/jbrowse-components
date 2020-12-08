@@ -2,8 +2,6 @@ import { Instance, types } from 'mobx-state-tree'
 
 import BaseViewModel from '@jbrowse/core/pluggableElementTypes/models/BaseViewModel'
 import { ElementId } from '@jbrowse/core/util/types/mst'
-import { parse } from 'clustal-js'
-import * as d3 from 'd3'
 
 export default function stateModelFactory() {
   return types.compose(
