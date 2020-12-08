@@ -7,17 +7,6 @@ import CloseIcon from '@material-ui/icons/Close'
 import pv from 'bio-pv'
 
 const styles = {
-  structurePanel: {
-    flexShrink: '0',
-    display: 'flex',
-    flexDirection: 'column',
-  },
-  structures: {
-    display: 'flex',
-    flexDirection: 'row',
-    overflowX: 'scroll',
-    overflowY: 'auto',
-  },
   structure: {
     position: 'relative',
     borderStyle: 'solid',

@@ -1,10 +1,25 @@
 /* eslint-disable react/prop-types */
 import React, { Component } from 'react'
+import { withStyles } from '@material-ui/core/styles'
 import pv from 'bio-pv'
 
 import { Select, MenuItem, FormControlLabel, Checkbox } from '@material-ui/core'
 
 import MSAStruct from './MSAStruct'
+
+const styles = {
+  panel: {
+    flexShrink: '0',
+    display: 'flex',
+    flexDirection: 'column',
+  },
+  structures: {
+    display: 'flex',
+    flexDirection: 'row',
+    overflowX: 'scroll',
+    overflowY: 'auto',
+  },
+}
 
 class MSAStructPanel extends Component {
   constructor(props) {
@@ -19,8 +34,8 @@ class MSAStructPanel extends Component {
 
   render() {
     return this.props.structures.length ? (
-      <div className="MSA-structure-panel">
-        <div className="MSA-structure-controls">
+      <div className={classes.panel}>
+        <div>
           <Select
             value={this.state.viewMode}
             onChange={this.handleSelectViewType.bind(this)}
@@ -55,7 +70,7 @@ class MSAStructPanel extends Component {
           />
         </div>
 
-        <div className="MSA-structures">
+        <div className={classes.structures}>
           {this.props.structures.map(structure => {
             return (
               <MSAStruct
@@ -231,4 +246,4 @@ class MSAStructPanel extends Component {
   }
 }
 
-export default MSAStructPanel
+export default withStyles(styles)(MSAStructPanel)
